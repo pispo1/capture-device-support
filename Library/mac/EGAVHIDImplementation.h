@@ -38,7 +38,7 @@ SOFTWARE.
 // macOS
 #include <IOKit/hid/IOHIDManager.h>
 
-#include "EGAVEngine/EGAVHID.h"
+#include "EGAVHID.h"
 
 class HIDTransport;
 
@@ -53,7 +53,7 @@ public:
 	//-----------------------------------------------------------------------------
 	// ## EGAVHIDInterface implementation
 	//-----------------------------------------------------------------------------
-	virtual EGAVResult InitHIDInterface(const EGAVDeviceID& inDeviceID, EGAVUnitPtr inOwner, bool inIgnoreDevicePathCheck = false) override;
+	virtual EGAVResult InitHIDInterface(const EGAVDeviceID& inDeviceID/*, EGAVUnitPtr inOwner, bool inIgnoreDevicePathCheck = false*/) override;
 	virtual EGAVResult DeinitHIDInterface() override;
 
 	//! @brief Reads a HID response message from the OS.

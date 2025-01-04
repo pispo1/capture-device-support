@@ -44,13 +44,21 @@ elseif(APPLE)
     set(PLATFORM_SOURCES)
 endif()
 
+# Create the static library
+add_library(EGAVHIDLib STATIC
+    ${PLATFORM_SOURCES}
+    "${FRAMEWORK_FOLDER}/EGAVResult.cpp"
+    "${FRAMEWORK_FOLDER}/ElgatoUVCDevice.cpp"
+    "${FRAMEWORK_FOLDER}/${PLATFORM_FOLDER}/EGAVHIDImplementation.cpp"
+)
+target_include_directories(EGAVHIDLib PRIVATE ${FRAMEWORK_FOLDER})
+
 # Add source to this project's executable.
 add_executable (EGAVHIDSample 
     ${PLATFORM_SOURCES}
     "${FRAMEWORK_FOLDER}/EGAVResult.cpp"
     "${FRAMEWORK_FOLDER}/ElgatoUVCDevice.cpp"
     "${FRAMEWORK_FOLDER}/${PLATFORM_FOLDER}/EGAVHIDImplementation.cpp"
-    "SampleCode/DriverInterface.cpp" 
     "SampleCode/main.cpp" 
 )
 
@@ -60,5 +68,9 @@ target_compile_definitions(EGAVHIDSample PUBLIC EGAV_API)
 if(WIN32)
     target_compile_definitions(EGAVHIDSample PUBLIC _UP_WINDOWS=1)
 elseif(APPLE)
+    target_link_libraries(EGAVHIDSample PRIVATE
+        "-framework CoreFoundation"
+        "-framework IOKit"
+    )
     target_compile_definitions(EGAVHIDSample PUBLIC _UP_MAC=1)
 endif()

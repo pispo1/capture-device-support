@@ -66,6 +66,8 @@ public:
 	//! @brief Works with HD60 S+, HD60 X or newer
 	void SetHDRTonemappingEnabled(bool inEnable);
 
+	EGAVResult IsInputActive(bool* active);
+
 	//! @brief Works with HD60 S+, HD60 X or newer
 	EGAVResult GetHDMIHDRStatusPacket(HDMI_GENERIC_INFOFRAME& outFrame);
 

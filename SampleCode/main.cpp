@@ -34,7 +34,7 @@ SOFTWARE.
 // # Constants
 //==============================================================================
 
-const EGAVDeviceID& selectedDeviceID = deviceIDHD60SPlus; // Select your device here
+const EGAVDeviceID& selectedDeviceID = deviceIDHD60X; // Select your device here
 
 
 //==============================================================================
@@ -57,6 +57,12 @@ int main()
 	else
 	{
 		ElgatoUVCDevice device(hid, IsNewDeviceType(selectedDeviceID));
+		bool active = false;
+		res = device.IsInputActive(&active);
+		if (res.Succeeded())
+		{
+			std::cout << "Input is " << active << std::endl;
+		}
 		HDMI_GENERIC_INFOFRAME frame{};
 		memset(&frame, 0, sizeof(frame));
 		res = device.GetHDMIHDRStatusPacket(frame);

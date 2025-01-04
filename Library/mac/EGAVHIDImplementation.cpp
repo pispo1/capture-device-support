@@ -130,14 +130,28 @@ void EGAVHID::DeviceRemoved(IOHIDDeviceRef deviceRef)
 	}
 }
 
+int64_t EplTime_GetMonotonicMilliseconds(void)
+{
+    struct timespec ts;
+    
+    // Get the monotonic clock time
+    if (clock_gettime(CLOCK_MONOTONIC, &ts) == -1)
+    {
+        perror("clock_gettime failed");
+        return 0; // Return 0 on failure
+    }
+
+    // Convert seconds and nanoseconds to milliseconds
+    return (int64_t)(ts.tv_sec * 1000) + (ts.tv_nsec / 1000000);
+}
 
 //==============================================================================
 // ## HID interface
 //==============================================================================
 
-EGAVResult EGAVHID::InitHIDInterface(const EGAVDeviceID& inDeviceID, EGAVUnitPtr /*inOwner*/, bool /* inIgnoreDevicePathCheck = false */)
+EGAVResult EGAVHID::InitHIDInterface(const EGAVDeviceID& inDeviceID/*, EGAVUnitPtr inOwner, bool inIgnoreDevicePathCheck = false */)
 {
-	dbgFunctionI();
+	//dbgFunctionI();
 	EGAVResult res = EGAVResult::Ok;
 
 	mLocationID = inDeviceID.locationID;
@@ -188,14 +202,17 @@ EGAVResult EGAVHID::InitHIDInterface(const EGAVDeviceID& inDeviceID, EGAVUnitPtr
 	if (mHIDDevice)
 	{
 		// Query input report size //! @todo do this only once
-		CFIndex         reportSize  = 0;
+		/*CFIndex         reportSize  = 0;
 		CFTypeRef number = IOHIDDeviceGetProperty(mHIDDevice, CFSTR(kIOHIDMaxInputReportSizeKey));
 		CFNumberGetValue((CFNumberRef)number, kCFNumberCFIndexType, &reportSize);
 		mInputReportSize = (int)reportSize;
 
 		number = IOHIDDeviceGetProperty(mHIDDevice, CFSTR(kIOHIDMaxOutputReportSizeKey));
 		CFNumberGetValue((CFNumberRef)number, kCFNumberCFIndexType, &reportSize);
-		mOutputReportSize = (int)reportSize;
+		mOutputReportSize = (int)reportSize;*/
+
+		mInputReportSize = 255;
+		mOutputReportSize = 255;
 	}
 	
 	return mHIDDevice ? EGAVResult::Ok : EGAVResult::ErrNotFound;
@@ -203,7 +220,6 @@ EGAVResult EGAVHID::InitHIDInterface(const EGAVDeviceID& inDeviceID, EGAVUnitPtr
 
 EGAVResult EGAVHID::DeinitHIDInterface()
 {
-	dbgFunctionI();
 	mHIDDevice = nullptr;
 	if (mRunLoop != nullptr)
 	{
@@ -254,8 +270,6 @@ EGAVResult EGAVHID::ReadHID(std::vector<uint8_t>& outMessage, int inReportId, in
 //! If device only has one report ID, it is zero (kHidDefaultReportID)
 EGAVResult EGAVHID::WriteHID(const std::vector<uint8_t>& inMessage, int inReportID)
 {
-	// dbgFunctionI();
-
 	EGAVResult_CheckPointer(mHIDDevice);
 
 	std::vector<uint8_t> report;
