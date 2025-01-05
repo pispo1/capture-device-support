@@ -63,8 +63,8 @@ int main()
 		if (res.Succeeded())
 		{
 			std::cout << std::dec << "Video Stream Info: "
-					<< videoInfo.vRes << "x"
-					<< videoInfo.hRes << "@"
+					<< videoInfo.hRes << "x"
+					<< videoInfo.vRes << "@"
 					<< (int)videoInfo.fRate
 					<< std::endl;
 		}
