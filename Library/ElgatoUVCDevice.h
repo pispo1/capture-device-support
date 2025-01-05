@@ -30,6 +30,7 @@ SOFTWARE.
 #include "EGAVResult.h"
 #include "EGAVDevice.h"
 #include "HDMIInfoFramesAPI.h"
+#include "VideoInfoAPI.h"
 
 #ifdef _MSC_VER
 #include "win/EGAVHIDImplementation.h"
@@ -66,7 +67,7 @@ public:
 	//! @brief Works with HD60 S+, HD60 X or newer
 	void SetHDRTonemappingEnabled(bool inEnable);
 
-	EGAVResult IsInputActive(bool* active);
+	EGAVResult GetVideoStreamInfo(VIDEO_STREAM_INFO& videoStreamInfo);
 
 	//! @brief Works with HD60 S+, HD60 X or newer
 	EGAVResult GetHDMIHDRStatusPacket(HDMI_GENERIC_INFOFRAME& outFrame);

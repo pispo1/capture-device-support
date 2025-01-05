@@ -57,11 +57,16 @@ int main()
 	else
 	{
 		ElgatoUVCDevice device(hid, IsNewDeviceType(selectedDeviceID));
-		bool active = false;
-		res = device.IsInputActive(&active);
+		VIDEO_STREAM_INFO videoInfo{};
+		memset(&videoInfo, 0, sizeof(videoInfo));
+		res = device.GetVideoStreamInfo(videoInfo);
 		if (res.Succeeded())
 		{
-			std::cout << "Input is " << active << std::endl;
+			std::cout << std::dec << "Video Stream Info: "
+					<< videoInfo.vRes << "x"
+					<< videoInfo.hRes << "@"
+					<< (int)videoInfo.fRate
+					<< std::endl;
 		}
 		HDMI_GENERIC_INFOFRAME frame{};
 		memset(&frame, 0, sizeof(frame));

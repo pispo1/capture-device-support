@@ -42,7 +42,7 @@ enum class I2CAddress
 //! @brief I2C registers for MCU (I2C address 0x55).
 enum class MCU_I2C_REGISTER
 {
-	GET_INPUTSTATE_PACKET=0x00,
+	GET_VIDEO_STREAM_INFO	= 0x00,
 	GET_HDR_PACKET		= 0x09, //!< HDR capable devices (HD60 S+, HD60 X)
 	XET_HDR_TONEMAPPING	= 0x0A, //!< HDR capable devices (HD60 S+, HD60 X): Enable hardware tonemapping; param 0/1 (uint8_t)
 };
@@ -196,26 +196,18 @@ void ElgatoUVCDevice::SetHDRTonemappingEnabled(bool inValue)
 	WriteI2cData((uint8_t)I2CAddress::MCU, (uint8_t)MCU_I2C_REGISTER::XET_HDR_TONEMAPPING, &buffer, sizeof(buffer));
 }
 
-EGAVResult ElgatoUVCDevice::IsInputActive(bool* active)
+EGAVResult ElgatoUVCDevice::GetVideoStreamInfo(VIDEO_STREAM_INFO& videoStreamInfo)
 {
 	const std::lock_guard<std::recursive_mutex> lock(mHIDMutex);
 
-	const size_t bufSize = mNewDeviceType ? 32 : 33;
+	const size_t bufSize = 8;
 	uint8_t* buffer = new uint8_t[bufSize];
 
-	EGAVResult res = ReadI2cData((uint8_t)I2CAddress::MCU, (uint8_t)MCU_I2C_REGISTER::GET_INPUTSTATE_PACKET, buffer, (uint8_t)bufSize);
+	EGAVResult res = ReadI2cData((uint8_t)I2CAddress::MCU, (uint8_t)MCU_I2C_REGISTER::GET_VIDEO_STREAM_INFO, buffer, (uint8_t)bufSize);
 	if (res.Succeeded())
 	{
-        *active = false;
-        for (size_t i = 0; i < bufSize; ++i)
-        {
-            if (buffer[i] != 0)
-            {
-                *active = true;
-                break;
-            }
-        }
-
+		size_t size = (bufSize < sizeof(videoStreamInfo)) ? bufSize : sizeof(videoStreamInfo);
+		memcpy(&videoStreamInfo, buffer, size);
 	}
 	delete [] buffer;
 	return res;
